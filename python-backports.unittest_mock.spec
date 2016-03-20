@@ -36,7 +36,9 @@ BuildRequires:	python3-pytest-runner
 %endif
 BuildRequires:	python3-setuptools
 BuildRequires:	python3-setuptools_scm >= 1.9
+BuildRequires:	sed >= 4.0
 %endif
+Requires:	python-mock
 Requires:	python-modules >= 1:2.7
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -115,6 +117,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with python3}
 %py3_install
+
+# pythonegg dependency generator resolves dependencies using python version running
+# the generator; avoid unwanted python3egg(mock) dependency
+%{__sed} -i '/^\[:python_version=="2\.7"\]$/,/^mock$/ d' $RPM_BUILD_ROOT%{py3_sitescriptdir}/backports.unittest_mock-%{version}-py*.egg-info/requires.txt
 %endif
 
 %clean

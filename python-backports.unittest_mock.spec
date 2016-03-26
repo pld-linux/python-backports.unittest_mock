@@ -9,7 +9,7 @@ Summary:	Make mock available as unittest.mock regardless of Python version
 Summary(pl.UTF-8):	Udostępnienie modułu mock jako unittest.mock niezależnie od wersji Pythona
 Name:		python-backports.unittest_mock
 Version:	1.1.1
-Release:	1
+Release:	2
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.python.org/pypi/backports.unittest_mock
@@ -38,6 +38,7 @@ BuildRequires:	python3-setuptools
 BuildRequires:	python3-setuptools_scm >= 1.9
 BuildRequires:	sed >= 4.0
 %endif
+Requires:	python-backports
 Requires:	python-mock
 Requires:	python-modules >= 1:2.7
 BuildArch:	noarch
@@ -130,7 +131,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc CHANGES.rst README.rst
-%dir %{py_sitescriptdir}/backports
 %{py_sitescriptdir}/backports/unittest_mock
 %{py_sitescriptdir}/backports.unittest_mock-%{version}-py*-nspkg.pth
 %{py_sitescriptdir}/backports.unittest_mock-%{version}-py*.egg-info

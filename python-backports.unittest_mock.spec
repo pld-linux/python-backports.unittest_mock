@@ -9,7 +9,7 @@ Summary:	Make mock available as unittest.mock regardless of Python version
 Summary(pl.UTF-8):	Udostępnienie modułu mock jako unittest.mock niezależnie od wersji Pythona
 Name:		python-backports.unittest_mock
 Version:	1.2.1
-Release:	1
+Release:	2
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.python.org/simple/backports.unittest_mock

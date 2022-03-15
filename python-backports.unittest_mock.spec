@@ -8,13 +8,13 @@
 Summary:	Make mock available as unittest.mock regardless of Python version
 Summary(pl.UTF-8):	Udostępnienie modułu mock jako unittest.mock niezależnie od wersji Pythona
 Name:		python-backports.unittest_mock
-Version:	1.2.1
-Release:	5
+Version:	1.5
+Release:	1
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.python.org/simple/backports.unittest_mock
 Source0:	https://files.pythonhosted.org/packages/source/b/backports.unittest_mock/backports.unittest_mock-%{version}.tar.gz
-# Source0-md5:	f7f129ad8734c5837f66fdd880938ec4
+# Source0-md5:	b089b2d4ef9740ef2bb0616e2f1303bb
 URL:		https://pypi.python.org/pypi/backports.unittest_mock
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -22,9 +22,11 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	python-modules >= 1:2.6
 %if %{with tests}
 BuildRequires:	python-mock
-BuildRequires:	python-pytest >= 2.8
+BuildRequires:	python-pytest >= 3.5
+BuildRequires:	python-pytest-black-multipy
+BuildRequires:	python-pytest-flake8
 %endif
-BuildRequires:	python-setuptools
+BuildRequires:	python-setuptools >= 1:31.0.1
 BuildRequires:	python-setuptools_scm >= 1.15.0
 %endif
 %if %{with python3}
@@ -33,15 +35,18 @@ BuildRequires:	python3-modules >= 1:3.2
 %if "%{py3_ver}" < "3.3"
 BuildRequires:	python3-mock
 %endif
-BuildRequires:	python3-pytest >= 2.8
+BuildRequires:	python3-pytest >= 3.5
+BuildRequires:	python3-pytest-black-multipy
+BuildRequires:	python3-pytest-flake8
 %endif
-BuildRequires:	python3-setuptools
+BuildRequires:	python3-setuptools >= 1:31.0.1
 BuildRequires:	python3-setuptools_scm >= 1.15.0
 BuildRequires:	sed >= 4.0
 %endif
 %if %{with doc}
-BuildRequires:	sphinx-pdg
-BuildRequires:	python3-rst.linker
+BuildRequires:	sphinx-pdg-3
+BuildRequires:	python3-jaraco.packaging >= 3.2
+BuildRequires:	python3-rst.linker >= 1.9
 %endif
 Requires:	python-backports
 Requires:	python-mock
@@ -101,21 +106,28 @@ Dokumentacja API modułu backports.unittest_mock.
 %if %{with python2}
 %py_build
 
-%{?with_tests:%{__python} -m pytest tests}
+%if %{with tests}
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTEST_PLUGINS=backports.unittest_mock,pytest_black_multipy,pytest_flake8 \
+PYTHONPATH=$(pwd) \
+%{__python} -m pytest tests
+%endif
 %endif
 
 %if %{with python3}
 %py3_build
 
-%{?with_tests:%{__python3} -m pytest tests}
+%if %{with tests}
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTEST_PLUGINS=backports.unittest_mock,pytest_black_multipy,pytest_flake8 \
+PYTHONPATH=$(pwd) \
+%{__python3} -m pytest tests
+%endif
 %endif
 
 %if %{with doc}
-TOPDIR=$(pwd)
-cd docs
-PYTHONPATH=$TOPDIR \
-sphinx-build -b html . html
-%{__rm} -r html/_sources
+PYTHONPATH=$(pwd) \
+sphinx-build-3 -b html docs docs/build/html
 %endif
 
 %install
@@ -125,16 +137,12 @@ rm -rf $RPM_BUILD_ROOT
 %py_install
 
 %py_postclean
+# packaged in python-backports
+%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/backports/__init__.py*
 %endif
 
 %if %{with python3}
 %py3_install
-
-%if "%{py3_ver}" >= "3.3"
-# pythonegg dependency generator resolves dependencies using python version running
-# the generator; avoid unwanted python3egg(mock) dependency
-%{__sed} -i '/^\[:python_version=="2\.7"/,/^mock$/ d' $RPM_BUILD_ROOT%{py3_sitescriptdir}/backports.unittest_mock-%{version}-py*.egg-info/requires.txt
-%endif
 %endif
 
 %clean
@@ -143,24 +151,24 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python2}
 %files
 %defattr(644,root,root,755)
-%doc CHANGES.rst README.rst
+%doc CHANGES.rst LICENSE README.rst
 %{py_sitescriptdir}/backports/unittest_mock
-%{py_sitescriptdir}/backports.unittest_mock-%{version}-py*-nspkg.pth
 %{py_sitescriptdir}/backports.unittest_mock-%{version}-py*.egg-info
 %endif
 
 %if %{with python3}
 %files -n python3-backports.unittest_mock
 %defattr(644,root,root,755)
-%doc CHANGES.rst README.rst
+%doc CHANGES.rst LICENSE README.rst
 %dir %{py3_sitescriptdir}/backports
+%{py3_sitescriptdir}/backports/__init__.py
+%{py3_sitescriptdir}/backports/__pycache__
 %{py3_sitescriptdir}/backports/unittest_mock
-%{py3_sitescriptdir}/backports.unittest_mock-%{version}-py*-nspkg.pth
 %{py3_sitescriptdir}/backports.unittest_mock-%{version}-py*.egg-info
 %endif
 
 %if %{with doc}
 %files apidocs
 %defattr(644,root,root,755)
-%doc docs/html/*
+%doc docs/build/html/{_static,*.html,*.js}
 %endif

@@ -12,10 +12,10 @@ Version:	1.5
 Release:	4
 License:	MIT
 Group:		Libraries/Python
-#Source0Download: https://pypi.python.org/simple/backports.unittest_mock
+#Source0Download: https://pypi.org/simple/backports.unittest_mock
 Source0:	https://files.pythonhosted.org/packages/source/b/backports.unittest_mock/backports.unittest_mock-%{version}.tar.gz
 # Source0-md5:	b089b2d4ef9740ef2bb0616e2f1303bb
-URL:		https://pypi.python.org/pypi/backports.unittest_mock
+URL:		https://pypi.org/project/backports.unittest_mock
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
 %if %{with python2}
